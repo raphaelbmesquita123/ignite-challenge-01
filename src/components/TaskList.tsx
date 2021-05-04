@@ -11,19 +11,46 @@ interface Task {
 }
 
 export function TaskList() {
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   function handleCreateNewTask() {
-    // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    const newTask = {
+      id: Math.floor(Math.random() *(100 - 1)) + 1,
+      title: newTaskTitle,
+      isComplete: false
+    }
+
+    if(newTask.title === ''){
+    } else {
+      setTasks(task => [...task, newTask])
+      setNewTaskTitle('')
+    }
   }
 
   function handleToggleTaskCompletion(id: number) {
-    // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const checkedTask = tasks.map(task => {
+      if (task.id === id){
+        return  {
+          id: task.id,
+          title: task.title,
+          isComplete: !task.isComplete
+        }
+      } else {
+        return task
+      }
+    }) 
+    setTasks(checkedTask)
   }
 
+
+
   function handleRemoveTask(id: number) {
-    // Remova uma task da listagem pelo ID
+    const deleteTask = tasks.filter( task => {
+      return task.id !== id
+      })
+    setTasks(deleteTask)
   }
 
   return (
@@ -47,15 +74,18 @@ export function TaskList() {
       <main>
         <ul>
           {tasks.map(task => (
+
             <li key={task.id}>
               <div className={task.isComplete ? 'completed' : ''} data-testid="task" >
                 <label className="checkbox-container">
+
                   <input 
                     type="checkbox"
                     readOnly
                     checked={task.isComplete}
                     onClick={() => handleToggleTaskCompletion(task.id)}
                   />
+
                   <span className="checkmark"></span>
                 </label>
                 <p>{task.title}</p>
@@ -64,6 +94,7 @@ export function TaskList() {
               <button type="button" data-testid="remove-task-button" onClick={() => handleRemoveTask(task.id)}>
                 <FiTrash size={16}/>
               </button>
+
             </li>
           ))}
           
